@@ -1,17 +1,25 @@
+const fs = require('fs'); 
+const { DOMParser } = require('xmldom');
+
 // Função para carregar arquivos JSON
-async function carregarJSON(url) {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Erro ao carregar o JSON: ${response.statusText}`);
-    return response.json();
+function carregarJSON(caminho) {
+    try {
+        const dados = fs.readFileSync(caminho, 'utf8');
+        return JSON.parse(dados);
+    } catch (error) {
+        throw new Error(`Erro ao carregar o JSON: ${error.message}`);
+    }
 }
 
 // Função para carregar arquivos XML
-async function carregarXML(url) {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Erro ao carregar o XML: ${response.statusText}`);
-    const xmlText = await response.text();
-    const parser = new DOMParser();
-    return parser.parseFromString(xmlText, "text/xml");
+function carregarXML(caminho) {
+    try {
+        const xmlText = fs.readFileSync(caminho, 'utf8');
+        const parser = new DOMParser();
+        return parser.parseFromString(xmlText, 'text/xml');
+    } catch (error) {
+        throw new Error(`Erro ao carregar o XML: ${error.message}`);
+    }
 }
 
 // Questão 1: Soma de números de 1 a 13
@@ -111,24 +119,24 @@ function questao5(string) {
     console.log(`String invertida: ${invertida}`);
 }
 
-// Função principal para execução
-async function main() {
+
+function main() {
     try {
         questao1();
         questao2(21); // Substitua pelo número desejado
 
-        const dadosJson = await carregarJSON('./dados.json');
+        const dadosJson = carregarJSON('./dados.json');
         questao3Json(dadosJson);
 
-        const xmlDoc = await carregarXML('./dados.xml');
+        const xmlDoc = carregarXML('./dados.xml');
         questao3Xml(xmlDoc);
 
         questao4();
-        questao5('desenvolvedor'); // Substitua pela string desejada
+        questao5('desenvolvedor');
     } catch (error) {
         console.error('Erro durante a execução:', error);
     }
 }
 
-// Executar a função principal
+
 main();
